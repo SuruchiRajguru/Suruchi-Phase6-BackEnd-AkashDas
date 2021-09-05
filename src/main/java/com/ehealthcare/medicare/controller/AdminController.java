@@ -67,16 +67,10 @@ public class AdminController {
 	@Autowired
 	private CartService cartService;
 	
-	@PostMapping("/saveadmin")
-	public Boolean saveAdmin(@RequestBody AdminRequest adminRequest) {
-		if(adminService.saveAdmin(adminRequest.getAdminName(), adminRequest.getPassword()))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+	@PostMapping("/validateAdminLogin")
+	public ResponseEntity<ResponseDTO> validateAdminLogin(@RequestBody AdminRequest adminRequest) {
+		ResponseEntity<ResponseDTO> response = adminService.validateAdminLogin(adminRequest.getAdminName(), adminRequest.getPassword());
+		return response;
 		
 		
 	}
