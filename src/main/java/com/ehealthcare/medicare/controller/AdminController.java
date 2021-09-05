@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -24,14 +26,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ehealthcare.medicare.dto.request.AdminRequest;
 import com.ehealthcare.medicare.dto.request.ProductQuantityRequest;
 import com.ehealthcare.medicare.dto.request.ProductRequest;
+import com.ehealthcare.medicare.dto.response.ResponseDTO;
 import com.ehealthcare.medicare.entity.Category;
 import com.ehealthcare.medicare.entity.Company;
 import com.ehealthcare.medicare.entity.Product;
+import com.ehealthcare.medicare.entity.ProductQuantity;
 import com.ehealthcare.medicare.service.AdminService;
+import com.ehealthcare.medicare.service.CartService;
 import com.ehealthcare.medicare.service.CategoryService;
 import com.ehealthcare.medicare.service.CompanyService;
 import com.ehealthcare.medicare.service.ProductQuantityService;
 import com.ehealthcare.medicare.service.ProductService;
+import com.ehealthcare.medicare.service.TransactionService;
+import com.google.gson.Gson;
 
 
 @RestController
@@ -53,6 +60,12 @@ public class AdminController {
 	
 	@Autowired
 	private ProductQuantityService productQuantityService;
+	
+	@Autowired
+	private TransactionService transactionService;
+	
+	@Autowired
+	private CartService cartService;
 	
 	@PostMapping("/saveadmin")
 	public Boolean saveAdmin(@RequestBody AdminRequest adminRequest) {
@@ -167,12 +180,20 @@ public class AdminController {
 		}		
 	}
 	
-	@PostMapping("/saveProduct")
-	public Boolean saveProduct(@ModelAttribute ProductRequest productRequest,@RequestParam("imgUrl") MultipartFile multipartFile,RedirectAttributes redirectAttributes)
+	@GetMapping("/listproductquantity")
+	public List<ProductQuantity> listProductQuantity()
+	{
+		return productQuantityService.getAllProductsQuantity();
+	}
+	
+	@PostMapping(value = "/saveProduct", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.MULTIPART_FORM_DATA_VALUE })
+	public Boolean saveProduct(@RequestPart("request") String productRequestString,@RequestPart("imgUrl") MultipartFile multipartFile)
 	{
 		
-		
-		if(productService.saveProduct(productRequest, multipartFile,redirectAttributes))
+		ProductRequest productRequest = new Gson().fromJson(productRequestString, ProductRequest.class);
+	
+		if(productService.saveProduct(productRequest, multipartFile))
 		{
 			return true;
 		}
@@ -183,8 +204,9 @@ public class AdminController {
 	}
 	
 	@PostMapping("/saveProductQuantity")
-	public Boolean saveProductQuantity(@ModelAttribute ProductQuantityRequest productQuantityRequest) throws ParseException
+	public Boolean saveProductQuantity(@RequestBody ProductQuantityRequest productQuantityRequest) throws ParseException
 	{
+		
 		if(productQuantityService.saveProductQuantity(productQuantityRequest))
 		{
 			return  true;
@@ -194,6 +216,20 @@ public class AdminController {
 			return false;
 		}
 	}
-}
+	
+	@GetMapping("/getAllCartItem")
+	public ResponseEntity<ResponseDTO> getAllCartItem(){
+		ResponseEntity<ResponseDTO> response = cartService.getAllCarItem();
+		return response;
+	}
+	
+	@GetMapping("/getAllOrderDetails")
+	public ResponseEntity<ResponseDTO> getAllOrderDetails(){
+		ResponseEntity<ResponseDTO> response = transactionService.getAllOrderDetails();
+		return response;
+	}
+	
+	
+	}
 
 

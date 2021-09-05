@@ -20,8 +20,4 @@ public class TransactionDetailsResponse {
 	public void setSignUp(SignUp signUp) {
 		this.signUp = signUp;
 	}
-	
-	
-	
-
 }

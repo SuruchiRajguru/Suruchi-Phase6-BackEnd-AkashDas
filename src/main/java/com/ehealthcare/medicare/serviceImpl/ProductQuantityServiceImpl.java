@@ -1,6 +1,7 @@
 package com.ehealthcare.medicare.serviceImpl;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,12 @@ public class ProductQuantityServiceImpl implements ProductQuantityService{
 	
 	@Autowired
 	private ProductQuantityRepository productQuantityRepository;
+	
+	@Override
+	public List<ProductQuantity> getAllProductsQuantity() {
+		List<ProductQuantity> productQuantities=productQuantityRepository.findAll();
+		return productQuantities;
+	}
 	
 	@Override
 	public Boolean saveProductQuantity(ProductQuantityRequest productQuantityRequest) {
@@ -41,6 +48,6 @@ public class ProductQuantityServiceImpl implements ProductQuantityService{
 			return false;
 		}
 	}
-	
 
+	
 }

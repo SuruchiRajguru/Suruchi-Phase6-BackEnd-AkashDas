@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="tbl_signup")
+@Table(name="tbl_user")
 public class SignUp {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

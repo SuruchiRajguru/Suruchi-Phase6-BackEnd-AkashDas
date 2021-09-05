@@ -6,4 +6,6 @@ import com.ehealthcare.medicare.entity.SignUp;
 
 public interface SignUpRepository extends JpaRepository<SignUp,Integer>{
 
+	SignUp findByEmailIdAndPassword(String emailId, String password);
+
 }
